@@ -5,6 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { AlertCircle, CheckCircle, AlertTriangle, Copy, Download } from "lucide-react";
 import { toast } from "sonner";
+import logo from "@/assets/logo_inspeere.svg";
 
 interface Question {
   id: number;
@@ -192,6 +193,9 @@ export default function RiskAssessment() {
     <div className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-8">
+          <div className="flex justify-center mb-6">
+            <img src={logo} alt="Inspeere" className="h-16" />
+          </div>
           <h1 className="text-4xl font-bold text-foreground mb-2">
             Évaluation du risque de perte de données
           </h1>
