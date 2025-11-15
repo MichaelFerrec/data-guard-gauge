@@ -305,6 +305,12 @@ export default function RiskAssessment() {
                 Nouvelle évaluation
               </Button>
             </div>
+
+            <Card className="p-6 mt-6 bg-muted/30">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                <strong>NB :</strong> Cet audit express constitue une première estimation basée sur des réponses déclaratives. Il ne remplace en aucun cas une analyse de risque formelle réalisée selon une méthode reconnue comme EBIOS ou ISO 27001. Inspeere ne saurait être tenue responsable des décisions prises sur la seule base de cette évaluation préliminaire.
+              </p>
+            </Card>
           </div>
         )}
       </div>
