@@ -68,6 +68,15 @@ const questions: Question[] = [
       { text: "Oui, mais ignorées ou méconnues", score: 3 },
     ],
   },
+  {
+    id: 7,
+    question: "Quel est le niveau de sensibilité des données concernées ?",
+    answers: [
+      { text: "Données peu sensibles, à faible impact en cas de perte", score: 1 },
+      { text: "Données importantes mais non réglementées", score: 2 },
+      { text: "Données sensibles ou réglementées (santé, justice, RH, etc.)", score: 3 },
+    ],
+  },
 ];
 
 export default function RiskAssessment() {
@@ -83,8 +92,8 @@ export default function RiskAssessment() {
   };
 
   const getRiskLevel = (score: number) => {
-    if (score < 7) return { level: "Faible", color: "low", icon: CheckCircle };
-    if (score <= 12) return { level: "Modéré", color: "moderate", icon: AlertTriangle };
+    if (score < 8) return { level: "Faible", color: "low", icon: CheckCircle };
+    if (score <= 14) return { level: "Modéré", color: "moderate", icon: AlertTriangle };
     return { level: "Élevé", color: "high", icon: AlertCircle };
   };
 
@@ -97,16 +106,17 @@ export default function RiskAssessment() {
     if (answers[4] >= 2) vulnerabilities.push("dépendance à un fournisseur unique");
     if (answers[5] >= 2) vulnerabilities.push("gestion des clés de chiffrement");
     if (answers[6] >= 2) vulnerabilities.push("conformité réglementaire");
+    if (answers[7] >= 2) vulnerabilities.push("sensibilité des données");
 
-    const intro = `Votre niveau de risque est ${riskLevel.toLowerCase()} avec un score de ${score}/18.`;
+    const intro = `Votre niveau de risque est ${riskLevel.toLowerCase()} avec un score de ${score}/21.`;
     
     const vulnText = vulnerabilities.length > 0
       ? `Les principales vulnérabilités identifiées concernent : ${vulnerabilities.slice(0, 2).join(" et ")}.`
       : "Votre infrastructure présente une bonne résilience globale.";
     
-    const action = score >= 13
+    const action = score >= 15
       ? "Nous recommandons un audit approfondi et la mise en place d'une solution de sauvegarde souveraine comme DATIS."
-      : score >= 7
+      : score >= 8
       ? "Un audit ciblé permettrait d'identifier les axes d'amélioration prioritaires."
       : "Votre organisation dispose d'une bonne base. Un suivi régulier est recommandé pour maintenir ce niveau.";
 
@@ -131,7 +141,7 @@ export default function RiskAssessment() {
     const risk = getRiskLevel(score);
     const synthesis = generateSynthesis(score, risk.level);
     
-    const report = `Évaluation du risque de perte de données - Inspeere\n\nScore: ${score}/18\nNiveau de risque: ${risk.level}\n\n${synthesis}`;
+    const report = `Évaluation du risque de perte de données - Inspeere\n\nScore: ${score}/21\nNiveau de risque: ${risk.level}\n\n${synthesis}`;
     
     navigator.clipboard.writeText(report);
     toast.success("Rapport copié dans le presse-papier");
@@ -162,7 +172,7 @@ export default function RiskAssessment() {
             <h1>Évaluation du risque de perte de données</h1>
             <p><strong>Inspeere</strong> | ${new Date().toLocaleDateString('fr-FR')}</p>
           </div>
-          <div class="score">Score: ${score}/18</div>
+          <div class="score">Score: ${score}/21</div>
           <div class="risk risk-${risk.color}">
             <strong>Niveau de risque:</strong> ${risk.level}
           </div>
@@ -267,7 +277,7 @@ export default function RiskAssessment() {
                 
                 <div>
                   <h2 className="text-3xl font-bold text-foreground mb-2">
-                    Score: {score}/18
+                    Score: {score}/21
                   </h2>
                   <div className={`inline-block px-6 py-2 rounded-full bg-risk-${risk.color}-bg`}>
                     <span className={`text-xl font-semibold text-risk-${risk.color}`}>
@@ -279,7 +289,7 @@ export default function RiskAssessment() {
                 <div className="w-full bg-secondary rounded-full h-4 overflow-hidden">
                   <div
                     className={`h-full bg-risk-${risk.color} transition-all duration-500`}
-                    style={{ width: `${(score / 18) * 100}%` }}
+                    style={{ width: `${(score / 21) * 100}%` }}
                   />
                 </div>
               </div>
