@@ -194,7 +194,7 @@ export default function RiskAssessment() {
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-6">
-            <img src={logo} alt="Inspeere" className="h-16" />
+            <img src={logo} alt="Inspeere" className="h-48" />
           </div>
           <h1 className="text-4xl font-bold text-foreground mb-2">
             Évaluation du risque de perte de données
