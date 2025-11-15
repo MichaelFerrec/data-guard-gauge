@@ -199,9 +199,6 @@ export default function RiskAssessment() {
           <h1 className="text-4xl font-bold text-foreground mb-2">
             Évaluation du risque de perte de données
           </h1>
-          <p className="text-muted-foreground text-lg mb-4">
-            Inspeere — Résilience • Souveraineté • Sobriété
-          </p>
           <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
             Il s'agit d'un audit express, inspiré des bonnes pratiques de cybersécurité (EBIOS, ISO 27001), conçu pour une première évaluation rapide de votre niveau de maturité face au risque de perte de données.
           </p>
