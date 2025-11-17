@@ -272,14 +272,18 @@ export default function RiskAssessment() {
             {/* Score principal avec badge de risque */}
             <Card className="p-8">
               <div className="text-center space-y-6">
-                <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-risk-${risk.color}-bg`}>
-                  <RiskIcon className={`w-10 h-10 text-risk-${risk.color}`} />
+                {/* Badge de score avec icône */}
+                <div className="flex items-center justify-center gap-4">
+                  <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-risk-${risk.color}-bg ring-4 ring-risk-${risk.color}-bg/20`}>
+                    <RiskIcon className={`w-10 h-10 text-risk-${risk.color}`} />
+                  </div>
+                  <div className={`inline-flex flex-col items-center justify-center px-8 py-4 rounded-2xl bg-risk-${risk.color}-bg border-2 border-risk-${risk.color}/20`}>
+                    <span className="text-4xl font-bold text-risk-${risk.color}">{score}</span>
+                    <span className="text-sm text-muted-foreground">/21 points</span>
+                  </div>
                 </div>
                 
                 <div>
-                  <h2 className="text-3xl font-bold text-foreground mb-2">
-                    Score: {score}/21
-                  </h2>
                   <div className={`inline-block px-6 py-2 rounded-full bg-risk-${risk.color}-bg`}>
                     <span className={`text-xl font-semibold text-risk-${risk.color}`}>
                       Risque {risk.level}
@@ -287,22 +291,54 @@ export default function RiskAssessment() {
                   </div>
                 </div>
 
-                {/* Thermomètre horizontal avec zones colorées */}
-                <div className="w-full space-y-2">
-                  <div className="relative w-full h-8 rounded-full overflow-hidden border-2 border-border">
-                    {/* Zones de fond colorées */}
-                    <div className="absolute inset-0 flex">
-                      <div className="bg-risk-low-bg" style={{ width: '33.33%' }} />
-                      <div className="bg-risk-moderate-bg" style={{ width: '33.33%' }} />
-                      <div className="bg-risk-high-bg" style={{ width: '33.34%' }} />
-                    </div>
-                    {/* Indicateur de score */}
-                    <div
-                      className={`absolute top-0 bottom-0 bg-risk-${risk.color} transition-all duration-500`}
-                      style={{ width: `${(score / 21) * 100}%` }}
-                    />
+                {/* Thermomètre horizontal avec zones colorées et curseur */}
+                <div className="w-full space-y-3 pt-4">
+                  {/* Labels des zones */}
+                  <div className="flex justify-between text-xs font-medium px-1">
+                    <span className="text-risk-low">Faible</span>
+                    <span className="text-risk-moderate">Modéré</span>
+                    <span className="text-risk-high">Élevé</span>
                   </div>
-                  <div className="flex justify-between text-xs text-muted-foreground">
+                  
+                  {/* Barre avec curseur */}
+                  <div className="relative w-full">
+                    {/* Curseur positionné au-dessus */}
+                    <div 
+                      className="absolute -top-2 transform -translate-x-1/2 transition-all duration-700 ease-out"
+                      style={{ left: `${(score / 21) * 100}%` }}
+                    >
+                      <div className="relative group">
+                        {/* Triangle pointeur */}
+                        <div className={`w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[12px] border-t-risk-${risk.color} drop-shadow-lg`} />
+                        
+                        {/* Tooltip */}
+                        <div className={`absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 rounded-lg bg-risk-${risk.color} text-white text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-lg`}>
+                          Score actuel: {score}/21 – Risque {risk.level}
+                          <div className={`absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[4px] border-t-risk-${risk.color}`} />
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Barre de progression */}
+                    <div className="relative w-full h-10 rounded-full overflow-hidden border-2 border-border shadow-inner">
+                      {/* Zones de fond colorées avec dégradés */}
+                      <div className="absolute inset-0 flex">
+                        <div className="bg-gradient-to-r from-green-100 to-green-200 dark:from-green-950 dark:to-green-900" style={{ width: '33.33%' }} />
+                        <div className="bg-gradient-to-r from-orange-100 to-orange-200 dark:from-orange-950 dark:to-orange-900" style={{ width: '33.33%' }} />
+                        <div className="bg-gradient-to-r from-red-100 to-red-200 dark:from-red-950 dark:to-red-900" style={{ width: '33.34%' }} />
+                      </div>
+                      
+                      {/* Overlay semi-transparent pour adoucir */}
+                      <div className="absolute inset-0 bg-background/10" />
+                      
+                      {/* Séparateurs de zones */}
+                      <div className="absolute top-0 bottom-0 border-r-2 border-border/40" style={{ left: '33.33%' }} />
+                      <div className="absolute top-0 bottom-0 border-r-2 border-border/40" style={{ left: '66.66%' }} />
+                    </div>
+                  </div>
+                  
+                  {/* Échelle numérique */}
+                  <div className="flex justify-between text-xs text-muted-foreground font-medium px-1">
                     <span>0</span>
                     <span>7</span>
                     <span>14</span>
