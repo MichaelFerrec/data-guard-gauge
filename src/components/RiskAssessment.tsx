@@ -269,6 +269,7 @@ export default function RiskAssessment() {
           </Card>
         ) : (
           <div className="space-y-6">
+            {/* Score principal avec badge de risque */}
             <Card className="p-8">
               <div className="text-center space-y-6">
                 <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-risk-${risk.color}-bg`}>
@@ -286,22 +287,73 @@ export default function RiskAssessment() {
                   </div>
                 </div>
 
-                <div className="w-full bg-secondary rounded-full h-4 overflow-hidden">
-                  <div
-                    className={`h-full bg-risk-${risk.color} transition-all duration-500`}
-                    style={{ width: `${(score / 21) * 100}%` }}
-                  />
+                {/* Thermomètre horizontal avec zones colorées */}
+                <div className="w-full space-y-2">
+                  <div className="relative w-full h-8 rounded-full overflow-hidden border-2 border-border">
+                    {/* Zones de fond colorées */}
+                    <div className="absolute inset-0 flex">
+                      <div className="bg-risk-low-bg" style={{ width: '33.33%' }} />
+                      <div className="bg-risk-moderate-bg" style={{ width: '33.33%' }} />
+                      <div className="bg-risk-high-bg" style={{ width: '33.34%' }} />
+                    </div>
+                    {/* Indicateur de score */}
+                    <div
+                      className={`absolute top-0 bottom-0 bg-risk-${risk.color} transition-all duration-500`}
+                      style={{ width: `${(score / 21) * 100}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>0</span>
+                    <span>7</span>
+                    <span>14</span>
+                    <span>21</span>
+                  </div>
                 </div>
               </div>
             </Card>
 
-            <Card className="p-8">
-              <h3 className="text-xl font-semibold text-foreground mb-4">Synthèse</h3>
-              <p className="text-foreground leading-relaxed">
-                {generateSynthesis(score, risk.level)}
-              </p>
+            {/* Synthèse avec icône info */}
+            <Card className="p-6 border-l-4 border-primary">
+              <div className="flex gap-3">
+                <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Synthèse de l'analyse</h3>
+                  <p className="text-foreground leading-relaxed">
+                    {generateSynthesis(score, risk.level)}
+                  </p>
+                </div>
+              </div>
             </Card>
 
+            {/* Détail des réponses */}
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold text-foreground mb-4">Détail de vos réponses</h3>
+              <div className="space-y-3">
+                {questions.map((q) => {
+                  const answer = q.answers.find(a => a.score === answers[q.id]);
+                  return (
+                    <div key={q.id} className="flex items-start gap-3 p-3 rounded-lg bg-muted/30">
+                      <span className="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground font-semibold text-xs shrink-0">
+                        {q.id}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground mb-1">{q.question}</p>
+                        <p className="text-sm text-muted-foreground">{answer?.text}</p>
+                      </div>
+                      <div className={`px-2 py-1 rounded text-xs font-semibold shrink-0 ${
+                        answer?.score === 1 ? 'bg-risk-low-bg text-risk-low' :
+                        answer?.score === 2 ? 'bg-risk-moderate-bg text-risk-moderate' :
+                        'bg-risk-high-bg text-risk-high'
+                      }`}>
+                        {answer?.score}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Card>
+
+            {/* Actions */}
             <div className="flex flex-wrap gap-4">
               <Button onClick={handleCopy} variant="outline" className="flex-1 min-w-[200px]">
                 <Copy className="w-4 h-4 mr-2" />
@@ -316,7 +368,8 @@ export default function RiskAssessment() {
               </Button>
             </div>
 
-            <Card className="p-6 mt-6 bg-muted/30">
+            {/* Note légale */}
+            <Card className="p-4 bg-muted/20 border-muted">
               <p className="text-xs text-muted-foreground leading-relaxed">
                 <strong>NB :</strong> Cet audit express constitue une première estimation basée sur des réponses déclaratives. Il ne remplace en aucun cas une analyse de risque formelle réalisée selon une méthode reconnue comme EBIOS ou ISO 27001. Inspeere ne saurait être tenue responsable des décisions prises sur la seule base de cette évaluation préliminaire.
               </p>
