@@ -275,101 +275,111 @@ export default function RiskAssessment() {
                 {/* Titre principal */}
                 <h2 className="text-2xl font-bold text-foreground">Résultat de l'évaluation</h2>
                 
-                {/* Badge de score géant avec icône */}
-                <div className="flex flex-col items-center gap-6 animate-scale-in">
-                  <div className={`relative inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-risk-${risk.color} to-risk-${risk.color}/80 shadow-2xl ring-8 ring-risk-${risk.color}-bg/30`}>
-                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/10 to-transparent" />
-                    <div className="flex flex-col items-center text-white">
-                      <span className="text-5xl font-bold drop-shadow-lg">{score}</span>
-                      <span className="text-sm font-medium opacity-90">/21</span>
+                {/* Badge de score principal */}
+                <div className="flex flex-col items-center gap-6">
+                  <div className={`inline-flex flex-col items-center justify-center px-12 py-8 rounded-2xl ${
+                    risk.color === 'low' ? 'bg-green-100 dark:bg-green-900/30' :
+                    risk.color === 'moderate' ? 'bg-orange-100 dark:bg-orange-900/30' :
+                    'bg-red-100 dark:bg-red-900/30'
+                  } border-2 ${
+                    risk.color === 'low' ? 'border-green-300 dark:border-green-700' :
+                    risk.color === 'moderate' ? 'border-orange-300 dark:border-orange-700' :
+                    'border-red-300 dark:border-red-700'
+                  }`}>
+                    <div className="flex items-baseline gap-2">
+                      <span className={`text-6xl font-bold ${
+                        risk.color === 'low' ? 'text-green-900 dark:text-green-100' :
+                        risk.color === 'moderate' ? 'text-orange-900 dark:text-orange-100' :
+                        'text-red-900 dark:text-red-100'
+                      }`}>{score}</span>
+                      <span className={`text-2xl font-medium ${
+                        risk.color === 'low' ? 'text-green-700 dark:text-green-300' :
+                        risk.color === 'moderate' ? 'text-orange-700 dark:text-orange-300' :
+                        'text-red-700 dark:text-red-300'
+                      }`}>/21</span>
                     </div>
-                  </div>
-                  
-                  <div>
-                    <div className={`inline-flex items-center gap-3 px-8 py-3 rounded-full bg-risk-${risk.color}-bg border-2 border-risk-${risk.color}/30 shadow-lg`}>
-                      <RiskIcon className={`w-6 h-6 text-risk-${risk.color}`} />
-                      <span className={`text-2xl font-bold text-risk-${risk.color}`}>
+                    <div className="flex items-center gap-2 mt-3">
+                      <RiskIcon className={`w-5 h-5 ${
+                        risk.color === 'low' ? 'text-green-700 dark:text-green-300' :
+                        risk.color === 'moderate' ? 'text-orange-700 dark:text-orange-300' :
+                        'text-red-700 dark:text-red-300'
+                      }`} />
+                      <span className={`text-xl font-semibold ${
+                        risk.color === 'low' ? 'text-green-900 dark:text-green-100' :
+                        risk.color === 'moderate' ? 'text-orange-900 dark:text-orange-100' :
+                        'text-red-900 dark:text-red-100'
+                      }`}>
                         Risque {risk.level}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Message explicatif contextuel */}
-                <div className={`max-w-xl mx-auto p-4 rounded-lg bg-risk-${risk.color}-bg/20 border-l-4 border-risk-${risk.color}`}>
-                  <p className="text-sm text-foreground leading-relaxed">
-                    {risk.level === "Élevé" && "Ce niveau de risque indique une exposition importante aux pertes de données. Une action corrective est fortement recommandée."}
-                    {risk.level === "Modéré" && "Votre infrastructure présente quelques vulnérabilités. Des améliorations ciblées permettraient de renforcer votre résilience."}
-                    {risk.level === "Faible" && "Votre organisation dispose d'une bonne protection contre les pertes de données. Maintenez ces bonnes pratiques."}
-                  </p>
-                </div>
-
-                {/* Thermomètre horizontal avec zones colorées et curseur amélioré */}
-                <div className="w-full space-y-4 pt-6">
-                  {/* Labels des zones */}
-                  <div className="flex justify-between text-sm font-semibold px-2">
-                    <span className="text-risk-low">Faible</span>
-                    <span className="text-risk-moderate">Modéré</span>
-                    <span className="text-risk-high">Élevé</span>
+                {/* Jauge avec curseur et zones clairement délimitées */}
+                <div className="w-full space-y-4 pt-4">
+                  {/* Labels des zones au-dessus */}
+                  <div className="flex justify-between text-sm font-semibold px-1">
+                    <span className="text-green-700 dark:text-green-400">Faible</span>
+                    <span className="text-orange-700 dark:text-orange-400">Modéré</span>
+                    <span className="text-red-700 dark:text-red-400">Élevé</span>
                   </div>
                   
-                  {/* Barre avec curseur et progression */}
-                  <div className="relative w-full">
-                    {/* Curseur badge positionné au-dessus */}
+                  {/* Barre avec curseur */}
+                  <div className="relative w-full pt-10">
+                    {/* Curseur positionné au-dessus de la barre */}
                     <div 
-                      className="absolute -top-14 transform -translate-x-1/2 transition-all duration-1000 ease-out delay-300 z-10"
+                      className="absolute -top-2 transform -translate-x-1/2 transition-all duration-700 ease-out z-10"
                       style={{ left: `${(score / 21) * 100}%` }}
                     >
-                      <div className="relative group animate-scale-in">
-                        {/* Badge avec score */}
-                        <div className={`px-4 py-2 rounded-full bg-risk-${risk.color} text-white font-bold text-lg shadow-2xl border-2 border-white whitespace-nowrap`}>
+                      <div className="flex flex-col items-center gap-1">
+                        {/* Badge avec le score */}
+                        <div className={`px-3 py-1 rounded-full font-bold text-sm ${
+                          risk.color === 'low' ? 'bg-green-700 text-white dark:bg-green-600' :
+                          risk.color === 'moderate' ? 'bg-orange-700 text-white dark:bg-orange-600' :
+                          'bg-red-700 text-white dark:bg-red-600'
+                        }`}>
                           {score}
                         </div>
-                        
                         {/* Triangle pointeur */}
-                        <div className={`absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[14px] border-t-risk-${risk.color} drop-shadow-lg`} />
-                        
-                        {/* Tooltip au survol */}
-                        <div className={`absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-3 py-2 rounded-lg bg-foreground text-background text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-xl pointer-events-none`}>
-                          Risque {risk.level}
-                        </div>
+                        <div className={`w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] ${
+                          risk.color === 'low' ? 'border-t-green-700 dark:border-t-green-600' :
+                          risk.color === 'moderate' ? 'border-t-orange-700 dark:border-t-orange-600' :
+                          'border-t-red-700 dark:border-t-red-600'
+                        }`} />
                       </div>
                     </div>
                     
-                    {/* Barre de progression */}
-                    <div className="relative w-full h-12 rounded-full overflow-hidden border-3 border-border shadow-lg">
-                      {/* Zones de fond colorées avec dégradés */}
+                    {/* Barre de progression avec 3 zones */}
+                    <div className="relative w-full h-10 rounded-full overflow-hidden border-2 border-border">
+                      {/* Zones colorées */}
                       <div className="absolute inset-0 flex">
-                        <div className="bg-gradient-to-r from-green-200 via-green-300 to-green-200 dark:from-green-900 dark:via-green-800 dark:to-green-900" style={{ width: '33.33%' }} />
-                        <div className="bg-gradient-to-r from-orange-200 via-orange-300 to-orange-200 dark:from-orange-900 dark:via-orange-800 dark:to-orange-900" style={{ width: '33.33%' }} />
-                        <div className="bg-gradient-to-r from-red-200 via-red-300 to-red-200 dark:from-red-900 dark:via-red-800 dark:to-red-900" style={{ width: '33.34%' }} />
+                        <div className="bg-green-200 dark:bg-green-900/50" style={{ width: '33.33%' }} />
+                        <div className="bg-orange-200 dark:bg-orange-900/50" style={{ width: '33.33%' }} />
+                        <div className="bg-red-200 dark:bg-red-900/50" style={{ width: '33.34%' }} />
                       </div>
                       
-                      {/* Progression remplie jusqu'au score */}
-                      <div 
-                        className={`absolute inset-y-0 left-0 bg-gradient-to-r transition-all duration-1000 ease-out delay-150 ${
-                          risk.color === 'low' ? 'from-green-400 to-green-500 dark:from-green-600 dark:to-green-700' :
-                          risk.color === 'moderate' ? 'from-orange-400 to-orange-500 dark:from-orange-600 dark:to-orange-700' :
-                          'from-red-400 to-red-500 dark:from-red-600 dark:to-red-700'
-                        }`}
-                        style={{ width: `${(score / 21) * 100}%` }}
-                      >
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
-                      </div>
-                      
-                      {/* Séparateurs de zones */}
-                      <div className="absolute top-0 bottom-0 border-r-2 border-border/60" style={{ left: '33.33%' }} />
-                      <div className="absolute top-0 bottom-0 border-r-2 border-border/60" style={{ left: '66.66%' }} />
+                      {/* Séparateurs verticaux aux seuils 7 et 14 */}
+                      <div className="absolute top-0 bottom-0 w-0.5 bg-border" style={{ left: '33.33%' }} />
+                      <div className="absolute top-0 bottom-0 w-0.5 bg-border" style={{ left: '66.66%' }} />
                     </div>
                   </div>
                   
-                  {/* Échelle numérique */}
-                  <div className="flex justify-between text-xs text-muted-foreground font-semibold px-2">
+                  {/* Échelle numérique en dessous */}
+                  <div className="flex justify-between text-xs text-muted-foreground font-medium px-1">
                     <span>0</span>
                     <span>7</span>
                     <span>14</span>
                     <span>21</span>
                   </div>
+                </div>
+
+                {/* Message explicatif contextuel */}
+                <div className="max-w-2xl mx-auto">
+                  <p className="text-base text-foreground leading-relaxed">
+                    {risk.level === "Élevé" && "Risque élevé : votre infrastructure présente des vulnérabilités importantes. Un audit approfondi et des actions correctives sont fortement recommandés."}
+                    {risk.level === "Modéré" && "Risque modéré : quelques vulnérabilités présentes. Des actions ciblées peuvent renforcer la résilience de votre infrastructure."}
+                    {risk.level === "Faible" && "Risque faible : votre organisation dispose d'une bonne protection contre les pertes de données. Maintenez ces bonnes pratiques avec un suivi régulier."}
+                  </p>
                 </div>
               </div>
             </Card>
