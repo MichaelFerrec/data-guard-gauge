@@ -270,75 +270,101 @@ export default function RiskAssessment() {
         ) : (
           <div className="space-y-6">
             {/* Score principal avec badge de risque */}
-            <Card className="p-8">
-              <div className="text-center space-y-6">
-                {/* Badge de score avec icône */}
-                <div className="flex items-center justify-center gap-4">
-                  <div className={`inline-flex items-center justify-center w-20 h-20 rounded-full bg-risk-${risk.color}-bg ring-4 ring-risk-${risk.color}-bg/20`}>
-                    <RiskIcon className={`w-10 h-10 text-risk-${risk.color}`} />
-                  </div>
-                  <div className={`inline-flex flex-col items-center justify-center px-8 py-4 rounded-2xl bg-risk-${risk.color}-bg border-2 border-risk-${risk.color}/20`}>
-                    <span className="text-4xl font-bold text-risk-${risk.color}">{score}</span>
-                    <span className="text-sm text-muted-foreground">/21 points</span>
-                  </div>
-                </div>
+            <Card className="p-10 animate-fade-in">
+              <div className="text-center space-y-8">
+                {/* Titre principal */}
+                <h2 className="text-2xl font-bold text-foreground">Résultat de l'évaluation</h2>
                 
-                <div>
-                  <div className={`inline-block px-6 py-2 rounded-full bg-risk-${risk.color}-bg`}>
-                    <span className={`text-xl font-semibold text-risk-${risk.color}`}>
-                      Risque {risk.level}
-                    </span>
+                {/* Badge de score géant avec icône */}
+                <div className="flex flex-col items-center gap-6 animate-scale-in">
+                  <div className={`relative inline-flex items-center justify-center w-32 h-32 rounded-full bg-gradient-to-br from-risk-${risk.color} to-risk-${risk.color}/80 shadow-2xl ring-8 ring-risk-${risk.color}-bg/30`}>
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/10 to-transparent" />
+                    <div className="flex flex-col items-center text-white">
+                      <span className="text-5xl font-bold drop-shadow-lg">{score}</span>
+                      <span className="text-sm font-medium opacity-90">/21</span>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <div className={`inline-flex items-center gap-3 px-8 py-3 rounded-full bg-risk-${risk.color}-bg border-2 border-risk-${risk.color}/30 shadow-lg`}>
+                      <RiskIcon className={`w-6 h-6 text-risk-${risk.color}`} />
+                      <span className={`text-2xl font-bold text-risk-${risk.color}`}>
+                        Risque {risk.level}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Thermomètre horizontal avec zones colorées et curseur */}
-                <div className="w-full space-y-3 pt-4">
+                {/* Message explicatif contextuel */}
+                <div className={`max-w-xl mx-auto p-4 rounded-lg bg-risk-${risk.color}-bg/20 border-l-4 border-risk-${risk.color}`}>
+                  <p className="text-sm text-foreground leading-relaxed">
+                    {risk.level === "Élevé" && "Ce niveau de risque indique une exposition importante aux pertes de données. Une action corrective est fortement recommandée."}
+                    {risk.level === "Modéré" && "Votre infrastructure présente quelques vulnérabilités. Des améliorations ciblées permettraient de renforcer votre résilience."}
+                    {risk.level === "Faible" && "Votre organisation dispose d'une bonne protection contre les pertes de données. Maintenez ces bonnes pratiques."}
+                  </p>
+                </div>
+
+                {/* Thermomètre horizontal avec zones colorées et curseur amélioré */}
+                <div className="w-full space-y-4 pt-6">
                   {/* Labels des zones */}
-                  <div className="flex justify-between text-xs font-medium px-1">
+                  <div className="flex justify-between text-sm font-semibold px-2">
                     <span className="text-risk-low">Faible</span>
                     <span className="text-risk-moderate">Modéré</span>
                     <span className="text-risk-high">Élevé</span>
                   </div>
                   
-                  {/* Barre avec curseur */}
+                  {/* Barre avec curseur et progression */}
                   <div className="relative w-full">
-                    {/* Curseur positionné au-dessus */}
+                    {/* Curseur badge positionné au-dessus */}
                     <div 
-                      className="absolute -top-2 transform -translate-x-1/2 transition-all duration-700 ease-out"
+                      className="absolute -top-14 transform -translate-x-1/2 transition-all duration-1000 ease-out delay-300 z-10"
                       style={{ left: `${(score / 21) * 100}%` }}
                     >
-                      <div className="relative group">
-                        {/* Triangle pointeur */}
-                        <div className={`w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[12px] border-t-risk-${risk.color} drop-shadow-lg`} />
+                      <div className="relative group animate-scale-in">
+                        {/* Badge avec score */}
+                        <div className={`px-4 py-2 rounded-full bg-risk-${risk.color} text-white font-bold text-lg shadow-2xl border-2 border-white whitespace-nowrap`}>
+                          {score}
+                        </div>
                         
-                        {/* Tooltip */}
-                        <div className={`absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 rounded-lg bg-risk-${risk.color} text-white text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-lg`}>
-                          Score actuel: {score}/21 – Risque {risk.level}
-                          <div className={`absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-t-[4px] border-t-risk-${risk.color}`} />
+                        {/* Triangle pointeur */}
+                        <div className={`absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[14px] border-t-risk-${risk.color} drop-shadow-lg`} />
+                        
+                        {/* Tooltip au survol */}
+                        <div className={`absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-3 py-2 rounded-lg bg-foreground text-background text-xs font-medium whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity shadow-xl pointer-events-none`}>
+                          Risque {risk.level}
                         </div>
                       </div>
                     </div>
                     
                     {/* Barre de progression */}
-                    <div className="relative w-full h-10 rounded-full overflow-hidden border-2 border-border shadow-inner">
+                    <div className="relative w-full h-12 rounded-full overflow-hidden border-3 border-border shadow-lg">
                       {/* Zones de fond colorées avec dégradés */}
                       <div className="absolute inset-0 flex">
-                        <div className="bg-gradient-to-r from-green-100 to-green-200 dark:from-green-950 dark:to-green-900" style={{ width: '33.33%' }} />
-                        <div className="bg-gradient-to-r from-orange-100 to-orange-200 dark:from-orange-950 dark:to-orange-900" style={{ width: '33.33%' }} />
-                        <div className="bg-gradient-to-r from-red-100 to-red-200 dark:from-red-950 dark:to-red-900" style={{ width: '33.34%' }} />
+                        <div className="bg-gradient-to-r from-green-200 via-green-300 to-green-200 dark:from-green-900 dark:via-green-800 dark:to-green-900" style={{ width: '33.33%' }} />
+                        <div className="bg-gradient-to-r from-orange-200 via-orange-300 to-orange-200 dark:from-orange-900 dark:via-orange-800 dark:to-orange-900" style={{ width: '33.33%' }} />
+                        <div className="bg-gradient-to-r from-red-200 via-red-300 to-red-200 dark:from-red-900 dark:via-red-800 dark:to-red-900" style={{ width: '33.34%' }} />
                       </div>
                       
-                      {/* Overlay semi-transparent pour adoucir */}
-                      <div className="absolute inset-0 bg-background/10" />
+                      {/* Progression remplie jusqu'au score */}
+                      <div 
+                        className={`absolute inset-y-0 left-0 bg-gradient-to-r transition-all duration-1000 ease-out delay-150 ${
+                          risk.color === 'low' ? 'from-green-400 to-green-500 dark:from-green-600 dark:to-green-700' :
+                          risk.color === 'moderate' ? 'from-orange-400 to-orange-500 dark:from-orange-600 dark:to-orange-700' :
+                          'from-red-400 to-red-500 dark:from-red-600 dark:to-red-700'
+                        }`}
+                        style={{ width: `${(score / 21) * 100}%` }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+                      </div>
                       
                       {/* Séparateurs de zones */}
-                      <div className="absolute top-0 bottom-0 border-r-2 border-border/40" style={{ left: '33.33%' }} />
-                      <div className="absolute top-0 bottom-0 border-r-2 border-border/40" style={{ left: '66.66%' }} />
+                      <div className="absolute top-0 bottom-0 border-r-2 border-border/60" style={{ left: '33.33%' }} />
+                      <div className="absolute top-0 bottom-0 border-r-2 border-border/60" style={{ left: '66.66%' }} />
                     </div>
                   </div>
                   
                   {/* Échelle numérique */}
-                  <div className="flex justify-between text-xs text-muted-foreground font-medium px-1">
+                  <div className="flex justify-between text-xs text-muted-foreground font-semibold px-2">
                     <span>0</span>
                     <span>7</span>
                     <span>14</span>
