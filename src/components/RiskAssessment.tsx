@@ -97,6 +97,34 @@ export default function RiskAssessment() {
     return { level: "Élevé", color: "high", icon: AlertCircle };
   };
 
+  const recommendationsMap: Record<number, string> = {
+    1: "Externaliser les sauvegardes critiques vers une infrastructure hors site, tolérante aux pannes physiques ou cyber",
+    2: "Augmenter la fréquence de vos sauvegardes pour limiter la perte de données en cas d'incident",
+    3: "Mettre en place un Plan de Reprise d'Activité régulièrement testé pour assurer la reprise rapide en cas de sinistre",
+    4: "Diversifier les lieux ou fournisseurs de stockage pour éviter tout point unique de défaillance",
+    5: "Chiffrer les sauvegardes avec des clés dont vous gardez la maîtrise (localement ou via HSM dédié)",
+    6: "Mettre en conformité vos pratiques de sauvegarde avec vos obligations réglementaires",
+    7: "Renforcer la protection des données sensibles avec des mesures de sécurité adaptées à leur criticité",
+  };
+
+  const getRecommendations = () => {
+    const recommendations: { questionId: number; score: number; text: string }[] = [];
+    
+    Object.entries(answers).forEach(([questionId, score]) => {
+      const id = parseInt(questionId);
+      if (score >= 2 && recommendationsMap[id]) {
+        recommendations.push({
+          questionId: id,
+          score,
+          text: recommendationsMap[id],
+        });
+      }
+    });
+
+    // Trier par score décroissant (les plus impactantes en premier)
+    return recommendations.sort((a, b) => b.score - a.score);
+  };
+
   const generateSynthesis = (score: number, riskLevel: string) => {
     const vulnerabilities: string[] = [];
     
@@ -115,7 +143,7 @@ export default function RiskAssessment() {
       : "Votre infrastructure présente une bonne résilience globale.";
     
     const action = score >= 15
-      ? "Nous recommandons un audit approfondi et la mise en place d'une solution de sauvegarde souveraine comme DATIS."
+      ? "Nous recommandons un audit approfondi et la mise en place d'une solution de sauvegarde souveraine."
       : score >= 8
       ? "Un audit ciblé permettrait d'identifier les axes d'amélioration prioritaires."
       : "Votre organisation dispose d'une bonne base. Un suivi régulier est recommandé pour maintenir ce niveau.";
@@ -198,6 +226,7 @@ export default function RiskAssessment() {
   const score = calculateScore();
   const risk = getRiskLevel(score);
   const RiskIcon = risk.icon;
+  const recommendations = getRecommendations();
 
   return (
     <div className="min-h-screen bg-background py-8 px-4">
@@ -396,6 +425,30 @@ export default function RiskAssessment() {
                 </div>
               </div>
             </Card>
+
+            {/* Recommandations personnalisées */}
+            {recommendations.length > 0 && (
+              <Card className="p-6 bg-muted/30">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  🔧 Recommandations pour renforcer votre résilience
+                </h3>
+                <div className="space-y-3">
+                  {recommendations.map((rec, index) => (
+                    <div
+                      key={rec.questionId}
+                      className="flex items-start gap-3 text-foreground"
+                    >
+                      <span className="text-base shrink-0 mt-0.5">
+                        {index === 0 ? "⚠️" : "•"}
+                      </span>
+                      <p className={`text-sm leading-relaxed ${index === 0 ? "font-medium" : ""}`}>
+                        {rec.text}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
 
             {/* Détail des réponses */}
             <Card className="p-6">
