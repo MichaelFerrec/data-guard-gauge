@@ -11,12 +11,14 @@ interface Question {
   id: number;
   question: string;
   answers: { text: string; score: number }[];
+  coefficient: number;
 }
 
 const questions: Question[] = [
   {
     id: 1,
     question: "Où sont stockées vos données critiques ?",
+    coefficient: 1.5,
     answers: [
       { text: "Dans plusieurs sites ou datacenters redondés", score: 1 },
       { text: "Sur un cloud unique (AWS, OVH, etc.)", score: 2 },
@@ -26,6 +28,7 @@ const questions: Question[] = [
   {
     id: 2,
     question: "Quelle est la fréquence de vos sauvegardes ?",
+    coefficient: 1.0,
     answers: [
       { text: "Quotidienne ou en continu", score: 1 },
       { text: "Hebdomadaire ou irrégulière", score: 2 },
@@ -35,6 +38,7 @@ const questions: Question[] = [
   {
     id: 3,
     question: "Disposez-vous d'un PRA testé récemment ?",
+    coefficient: 2.0,
     answers: [
       { text: "Oui, testé dans les 12 derniers mois", score: 1 },
       { text: "Oui, mais jamais testé ou partiellement", score: 2 },
@@ -44,6 +48,7 @@ const questions: Question[] = [
   {
     id: 4,
     question: "Êtes-vous dépendant d'un seul site ou fournisseur ?",
+    coefficient: 1.5,
     answers: [
       { text: "Non, plusieurs sites ou fournisseurs", score: 1 },
       { text: "Oui, un seul fournisseur (cloud ou local)", score: 2 },
@@ -53,6 +58,7 @@ const questions: Question[] = [
   {
     id: 5,
     question: "Vos sauvegardes sont-elles chiffrées avec maîtrise locale des clés ?",
+    coefficient: 1.2,
     answers: [
       { text: "Oui, clés locales ou HSM", score: 1 },
       { text: "Oui, mais clés chez un prestataire externe", score: 2 },
@@ -62,6 +68,7 @@ const questions: Question[] = [
   {
     id: 6,
     question: "Êtes-vous soumis à des obligations réglementaires ou souveraines spécifiques ?",
+    coefficient: 1.2,
     answers: [
       { text: "Oui, pleinement prises en compte", score: 1 },
       { text: "Oui, partiellement traitées", score: 2 },
@@ -71,6 +78,7 @@ const questions: Question[] = [
   {
     id: 7,
     question: "Quel est le niveau de sensibilité des données concernées ?",
+    coefficient: 1.2,
     answers: [
       { text: "Données peu sensibles, à faible impact en cas de perte", score: 1 },
       { text: "Données importantes mais non réglementées", score: 2 },
@@ -88,12 +96,27 @@ export default function RiskAssessment() {
   };
 
   const calculateScore = () => {
-    return Object.values(answers).reduce((sum, score) => sum + score, 0);
+    // Calcul du score pondéré
+    let weightedScore = 0;
+    Object.entries(answers).forEach(([questionId, score]) => {
+      const question = questions.find(q => q.id === parseInt(questionId));
+      if (question) {
+        weightedScore += score * question.coefficient;
+      }
+    });
+    return weightedScore;
   };
 
-  const getRiskLevel = (score: number) => {
-    if (score < 8) return { level: "Faible", color: "low", icon: CheckCircle };
-    if (score <= 14) return { level: "Modéré", color: "moderate", icon: AlertTriangle };
+  const calculateMaturityRate = (weightedScore: number) => {
+    // Score max = 37.2 (3 × somme des coefficients)
+    const maxScore = 37.2;
+    const maturityRate = (1 - (weightedScore / maxScore)) * 100;
+    return Math.round(maturityRate);
+  };
+
+  const getRiskLevel = (maturityRate: number) => {
+    if (maturityRate >= 75) return { level: "Faible", color: "low", icon: CheckCircle };
+    if (maturityRate >= 40) return { level: "Modéré", color: "moderate", icon: AlertTriangle };
     return { level: "Élevé", color: "high", icon: AlertCircle };
   };
 
@@ -125,7 +148,7 @@ export default function RiskAssessment() {
     return recommendations.sort((a, b) => b.score - a.score);
   };
 
-  const generateSynthesis = (score: number, riskLevel: string) => {
+  const generateSynthesis = (maturityRate: number, riskLevel: string) => {
     const vulnerabilities: string[] = [];
     
     if (answers[1] === 3) vulnerabilities.push("stockage sans redondance");
@@ -136,15 +159,15 @@ export default function RiskAssessment() {
     if (answers[6] >= 2) vulnerabilities.push("conformité réglementaire");
     if (answers[7] >= 2) vulnerabilities.push("sensibilité des données");
 
-    const intro = `Votre niveau de risque est ${riskLevel.toLowerCase()} avec un score de ${score}/21.`;
+    const intro = `Votre niveau de risque est ${riskLevel.toLowerCase()} avec un taux de maturité de ${maturityRate}%.`;
     
     const vulnText = vulnerabilities.length > 0
       ? `Les principales vulnérabilités identifiées concernent : ${vulnerabilities.slice(0, 2).join(" et ")}.`
       : "Votre infrastructure présente une bonne résilience globale.";
     
-    const action = score >= 15
+    const action = maturityRate < 40
       ? "Nous recommandons un audit approfondi et la mise en place d'une solution de sauvegarde souveraine."
-      : score >= 8
+      : maturityRate < 75
       ? "Un audit ciblé permettrait d'identifier les axes d'amélioration prioritaires."
       : "Votre organisation dispose d'une bonne base. Un suivi régulier est recommandé pour maintenir ce niveau.";
 
@@ -165,20 +188,22 @@ export default function RiskAssessment() {
   };
 
   const handleCopy = () => {
-    const score = calculateScore();
-    const risk = getRiskLevel(score);
-    const synthesis = generateSynthesis(score, risk.level);
+    const weightedScore = calculateScore();
+    const maturityRate = calculateMaturityRate(weightedScore);
+    const risk = getRiskLevel(maturityRate);
+    const synthesis = generateSynthesis(maturityRate, risk.level);
     
-    const report = `Évaluation du risque de perte de données - Inspeere\n\nScore: ${score}/21\nNiveau de risque: ${risk.level}\n\n${synthesis}`;
+    const report = `Évaluation du risque de perte de données - Inspeere\n\nTaux de maturité: ${maturityRate}%\nNiveau de risque: ${risk.level}\n\n${synthesis}`;
     
     navigator.clipboard.writeText(report);
     toast.success("Rapport copié dans le presse-papier");
   };
 
   const handleExportPDF = () => {
-    const score = calculateScore();
-    const risk = getRiskLevel(score);
-    const synthesis = generateSynthesis(score, risk.level);
+    const weightedScore = calculateScore();
+    const maturityRate = calculateMaturityRate(weightedScore);
+    const risk = getRiskLevel(maturityRate);
+    const synthesis = generateSynthesis(maturityRate, risk.level);
     
     const content = `
       <html>
@@ -200,7 +225,7 @@ export default function RiskAssessment() {
             <h1>Évaluation du risque de perte de données</h1>
             <p><strong>Inspeere</strong> | ${new Date().toLocaleDateString('fr-FR')}</p>
           </div>
-          <div class="score">Score: ${score}/21</div>
+          <div class="score">Taux de maturité: ${maturityRate}%</div>
           <div class="risk risk-${risk.color}">
             <strong>Niveau de risque:</strong> ${risk.level}
           </div>
@@ -223,8 +248,9 @@ export default function RiskAssessment() {
     toast.success("Rapport exporté");
   };
 
-  const score = calculateScore();
-  const risk = getRiskLevel(score);
+  const weightedScore = calculateScore();
+  const maturityRate = calculateMaturityRate(weightedScore);
+  const risk = getRiskLevel(maturityRate);
   const RiskIcon = risk.icon;
   const recommendations = getRecommendations();
 
@@ -304,7 +330,7 @@ export default function RiskAssessment() {
                 {/* Titre principal */}
                 <h2 className="text-2xl font-bold text-foreground">Résultat de l'évaluation</h2>
                 
-                {/* Badge de score principal */}
+                {/* Badge de taux de maturité principal */}
                 <div className="flex flex-col items-center gap-6">
                   <div className={`inline-flex flex-col items-center justify-center px-12 py-8 rounded-2xl ${
                     risk.color === 'low' ? 'bg-green-100 dark:bg-green-900/30' :
@@ -320,12 +346,19 @@ export default function RiskAssessment() {
                         risk.color === 'low' ? 'text-green-900 dark:text-green-100' :
                         risk.color === 'moderate' ? 'text-orange-900 dark:text-orange-100' :
                         'text-red-900 dark:text-red-100'
-                      }`}>{score}</span>
+                      }`}>{maturityRate}</span>
                       <span className={`text-2xl font-medium ${
                         risk.color === 'low' ? 'text-green-700 dark:text-green-300' :
                         risk.color === 'moderate' ? 'text-orange-700 dark:text-orange-300' :
                         'text-red-700 dark:text-red-300'
-                      }`}>/21</span>
+                      }`}>%</span>
+                    </div>
+                    <div className={`text-sm font-medium mt-1 ${
+                      risk.color === 'low' ? 'text-green-700 dark:text-green-300' :
+                      risk.color === 'moderate' ? 'text-orange-700 dark:text-orange-300' :
+                      'text-red-700 dark:text-red-300'
+                    }`}>
+                      Taux de maturité
                     </div>
                     <div className="flex items-center gap-2 mt-3">
                       <RiskIcon className={`w-5 h-5 ${
@@ -348,9 +381,9 @@ export default function RiskAssessment() {
                 <div className="w-full space-y-4 pt-4">
                   {/* Labels des zones au-dessus */}
                   <div className="flex justify-between text-sm font-semibold px-1">
-                    <span className="text-green-700 dark:text-green-400">Faible</span>
-                    <span className="text-orange-700 dark:text-orange-400">Modéré</span>
-                    <span className="text-red-700 dark:text-red-400">Élevé</span>
+                    <span className="text-green-700 dark:text-green-400">Élevé (&gt;75%)</span>
+                    <span className="text-orange-700 dark:text-orange-400">Modéré (40-74%)</span>
+                    <span className="text-red-700 dark:text-red-400">Faible (&lt;40%)</span>
                   </div>
                   
                   {/* Barre avec curseur */}
@@ -358,16 +391,16 @@ export default function RiskAssessment() {
                     {/* Curseur positionné au-dessus de la barre */}
                     <div 
                       className="absolute -top-2 transform -translate-x-1/2 transition-all duration-700 ease-out z-10"
-                      style={{ left: `${(score / 21) * 100}%` }}
+                      style={{ left: `${maturityRate}%` }}
                     >
                       <div className="flex flex-col items-center gap-1">
-                        {/* Badge avec le score */}
+                        {/* Badge avec le taux */}
                         <div className={`px-3 py-1 rounded-full font-bold text-sm ${
                           risk.color === 'low' ? 'bg-green-700 text-white dark:bg-green-600' :
                           risk.color === 'moderate' ? 'bg-orange-700 text-white dark:bg-orange-600' :
                           'bg-red-700 text-white dark:bg-red-600'
                         }`}>
-                          {score}
+                          {maturityRate}%
                         </div>
                         {/* Triangle pointeur */}
                         <div className={`w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] ${
@@ -378,27 +411,34 @@ export default function RiskAssessment() {
                       </div>
                     </div>
                     
-                    {/* Barre de progression avec 3 zones */}
+                    {/* Barre de progression avec 3 zones inversées (0% = rouge, 100% = vert) */}
                     <div className="relative w-full h-10 rounded-full overflow-hidden border-2 border-border">
-                      {/* Zones colorées */}
+                      {/* Zones colorées (inversées pour refléter la maturité) */}
                       <div className="absolute inset-0 flex">
-                        <div className="bg-green-200 dark:bg-green-900/50" style={{ width: '33.33%' }} />
-                        <div className="bg-orange-200 dark:bg-orange-900/50" style={{ width: '33.33%' }} />
-                        <div className="bg-red-200 dark:bg-red-900/50" style={{ width: '33.34%' }} />
+                        <div className="bg-red-200 dark:bg-red-900/50" style={{ width: '40%' }} />
+                        <div className="bg-orange-200 dark:bg-orange-900/50" style={{ width: '35%' }} />
+                        <div className="bg-green-200 dark:bg-green-900/50" style={{ width: '25%' }} />
                       </div>
                       
-                      {/* Séparateurs verticaux aux seuils 7 et 14 */}
-                      <div className="absolute top-0 bottom-0 w-0.5 bg-border" style={{ left: '33.33%' }} />
-                      <div className="absolute top-0 bottom-0 w-0.5 bg-border" style={{ left: '66.66%' }} />
+                      {/* Séparateurs verticaux aux seuils 40% et 75% */}
+                      <div className="absolute top-0 bottom-0 w-0.5 bg-border" style={{ left: '40%' }} />
+                      <div className="absolute top-0 bottom-0 w-0.5 bg-border" style={{ left: '75%' }} />
                     </div>
                   </div>
                   
                   {/* Échelle numérique en dessous */}
-                  <div className="flex justify-between text-xs text-muted-foreground font-medium px-1">
-                    <span>0</span>
-                    <span>7</span>
-                    <span>14</span>
-                    <span>21</span>
+                  <div className="flex justify-between text-xs text-muted-foreground px-1">
+                    <span>0%</span>
+                    <span>40%</span>
+                    <span>75%</span>
+                    <span>100%</span>
+                  </div>
+                  
+                  {/* Infobulle explicative */}
+                  <div className="text-center mt-4">
+                    <p className="text-xs text-muted-foreground italic">
+                      Ce score pondéré prend en compte la criticité de chaque facteur pour évaluer la résilience de votre système face à la perte de données.
+                    </p>
                   </div>
                 </div>
 
@@ -420,7 +460,7 @@ export default function RiskAssessment() {
                 <div>
                   <h3 className="text-lg font-semibold text-foreground mb-2">Synthèse de l'analyse</h3>
                   <p className="text-foreground leading-relaxed">
-                    {generateSynthesis(score, risk.level)}
+                    {generateSynthesis(maturityRate, risk.level)}
                   </p>
                 </div>
               </div>
