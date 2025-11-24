@@ -453,42 +453,46 @@ export default function RiskAssessment() {
               </div>
             </Card>
 
-            {/* Synthèse avec icône info */}
+            {/* Synthèse et recommandations regroupées */}
             <Card className="p-6 border-l-4 border-primary">
-              <div className="flex gap-3">
+              {/* Synthèse de l'analyse */}
+              <div className="flex gap-3 mb-6">
                 <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <div>
+                <div className="flex-1">
                   <h3 className="text-lg font-semibold text-foreground mb-2">Synthèse de l'analyse</h3>
                   <p className="text-foreground leading-relaxed">
                     {generateSynthesis(maturityRate, risk.level)}
                   </p>
                 </div>
               </div>
-            </Card>
 
-            {/* Recommandations personnalisées */}
-            {recommendations.length > 0 && (
-              <Card className="p-6 bg-muted/30">
-                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                  🔧 Recommandations pour renforcer votre résilience
-                </h3>
-                <div className="space-y-3">
-                  {recommendations.map((rec, index) => (
-                    <div
-                      key={rec.questionId}
-                      className="flex items-start gap-3 text-foreground"
-                    >
-                      <span className="text-base shrink-0 mt-0.5">
-                        {index === 0 ? "⚠️" : "•"}
-                      </span>
-                      <p className={`text-sm leading-relaxed ${index === 0 ? "font-medium" : ""}`}>
-                        {rec.text}
-                      </p>
+              {/* Recommandations personnalisées */}
+              {recommendations.length > 0 && (
+                <>
+                  <div className="border-t border-border my-6" />
+                  <div>
+                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                      🔧 Recommandations pour renforcer votre résilience
+                    </h3>
+                    <div className="space-y-3">
+                      {recommendations.map((rec, index) => (
+                        <div
+                          key={rec.questionId}
+                          className="flex items-start gap-3 text-foreground"
+                        >
+                          <span className="text-base shrink-0 mt-0.5">
+                            {index === 0 ? "⚠️" : "•"}
+                          </span>
+                          <p className={`text-sm leading-relaxed ${index === 0 ? "font-medium" : ""}`}>
+                            {rec.text}
+                          </p>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </Card>
-            )}
+                  </div>
+                </>
+              )}
+            </Card>
 
             {/* Détail des réponses */}
             <Card className="p-6">
