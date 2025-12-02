@@ -381,9 +381,9 @@ export default function RiskAssessment() {
                 <div className="w-full space-y-4 pt-4">
                   {/* Labels des zones au-dessus */}
                   <div className="flex justify-between text-sm font-semibold px-1">
-                    <span className="text-green-700 dark:text-green-400">Élevé (&gt;75%)</span>
+                    <span className="text-red-700 dark:text-red-400">Élevé (&lt;40%)</span>
                     <span className="text-orange-700 dark:text-orange-400">Modéré (40-74%)</span>
-                    <span className="text-red-700 dark:text-red-400">Faible (&lt;40%)</span>
+                    <span className="text-green-700 dark:text-green-400">Faible (&gt;75%)</span>
                   </div>
                   
                   {/* Barre avec curseur */}
