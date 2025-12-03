@@ -108,8 +108,8 @@ export default function RiskAssessment() {
   };
 
   const calculateMaturityRate = (weightedScore: number) => {
-    // Score max = 37.2 (3 × somme des coefficients)
-    const maxScore = 37.2;
+    // Score max = 28.8 (3 × somme des coefficients: 1.5+1.0+2.0+1.5+1.2+1.2+1.2 = 9.6)
+    const maxScore = 28.8;
     const maturityRate = (1 - (weightedScore / maxScore)) * 100;
     return Math.round(maturityRate);
   };
