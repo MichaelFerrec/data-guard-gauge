@@ -20,9 +20,9 @@ const questions: Question[] = [
     question: "Où sont stockées vos données critiques ?",
     coefficient: 1.5,
     answers: [
-      { text: "Dans plusieurs sites ou datacenters redondés", score: 1 },
-      { text: "Sur un cloud unique (AWS, OVH, etc.)", score: 2 },
-      { text: "Sur un serveur local sans redondance externe", score: 3 },
+      { text: "Dans plusieurs sites ou datacenters redondés", score: 0 },
+      { text: "Sur un cloud unique (AWS, OVH, etc.)", score: 1 },
+      { text: "Sur un serveur local sans redondance externe", score: 2 },
     ],
   },
   {
@@ -30,9 +30,9 @@ const questions: Question[] = [
     question: "Quelle est la fréquence de vos sauvegardes ?",
     coefficient: 1.0,
     answers: [
-      { text: "Quotidienne ou en continu", score: 1 },
-      { text: "Hebdomadaire ou irrégulière", score: 2 },
-      { text: "Moins d'une fois par semaine", score: 3 },
+      { text: "Quotidienne ou en continu", score: 0 },
+      { text: "Hebdomadaire ou irrégulière", score: 1 },
+      { text: "Moins d'une fois par semaine", score: 2 },
     ],
   },
   {
@@ -40,9 +40,9 @@ const questions: Question[] = [
     question: "Disposez-vous d'un PRA testé récemment ?",
     coefficient: 2.0,
     answers: [
-      { text: "Oui, testé dans les 12 derniers mois", score: 1 },
-      { text: "Oui, mais jamais testé ou partiellement", score: 2 },
-      { text: "Non, aucun PRA formel", score: 3 },
+      { text: "Oui, testé dans les 12 derniers mois", score: 0 },
+      { text: "Oui, mais jamais testé ou partiellement", score: 1 },
+      { text: "Non, aucun PRA formel", score: 2 },
     ],
   },
   {
@@ -50,9 +50,9 @@ const questions: Question[] = [
     question: "Êtes-vous dépendant d'un seul site ou fournisseur ?",
     coefficient: 1.5,
     answers: [
-      { text: "Non, plusieurs sites ou fournisseurs", score: 1 },
-      { text: "Oui, un seul fournisseur (cloud ou local)", score: 2 },
-      { text: "Oui, un seul site physique", score: 3 },
+      { text: "Non, plusieurs sites ou fournisseurs", score: 0 },
+      { text: "Oui, un seul fournisseur (cloud ou local)", score: 1 },
+      { text: "Oui, un seul site physique", score: 2 },
     ],
   },
   {
@@ -60,9 +60,9 @@ const questions: Question[] = [
     question: "Vos sauvegardes sont-elles chiffrées avec maîtrise locale des clés ?",
     coefficient: 1.2,
     answers: [
-      { text: "Oui, clés locales ou HSM", score: 1 },
-      { text: "Oui, mais clés chez un prestataire externe", score: 2 },
-      { text: "Non, pas de chiffrement ou clés exposées", score: 3 },
+      { text: "Oui, clés locales ou HSM", score: 0 },
+      { text: "Oui, mais clés chez un prestataire externe", score: 1 },
+      { text: "Non, pas de chiffrement ou clés exposées", score: 2 },
     ],
   },
   {
@@ -70,9 +70,9 @@ const questions: Question[] = [
     question: "Êtes-vous soumis à des obligations réglementaires ou souveraines spécifiques ?",
     coefficient: 1.2,
     answers: [
-      { text: "Oui, pleinement prises en compte", score: 1 },
-      { text: "Oui, partiellement traitées", score: 2 },
-      { text: "Oui, mais ignorées ou méconnues", score: 3 },
+      { text: "Oui, pleinement prises en compte", score: 0 },
+      { text: "Oui, partiellement traitées", score: 1 },
+      { text: "Oui, mais ignorées ou méconnues", score: 2 },
     ],
   },
   {
@@ -80,9 +80,9 @@ const questions: Question[] = [
     question: "Quel est le niveau de sensibilité des données concernées ?",
     coefficient: 1.2,
     answers: [
-      { text: "Données peu sensibles, à faible impact en cas de perte", score: 1 },
-      { text: "Données importantes mais non réglementées", score: 2 },
-      { text: "Données sensibles ou réglementées (santé, justice, RH, etc.)", score: 3 },
+      { text: "Données peu sensibles, à faible impact en cas de perte", score: 0 },
+      { text: "Données importantes mais non réglementées", score: 1 },
+      { text: "Données sensibles ou réglementées (santé, justice, RH, etc.)", score: 2 },
     ],
   },
 ];
@@ -135,7 +135,7 @@ export default function RiskAssessment() {
     
     Object.entries(answers).forEach(([questionId, score]) => {
       const id = parseInt(questionId);
-      if (score >= 2 && recommendationsMap[id]) {
+      if (score >= 1 && recommendationsMap[id]) {
         recommendations.push({
           questionId: id,
           score,
